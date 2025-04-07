@@ -73,7 +73,7 @@
                                     <li class="breadcrumb-item"><a href="https://iragufoundation.org/admin/dashboard">Dashboard</a></li>
                                     <li class="breadcrumb-item" aria-current="page">Add Content</li>
                                 </ul>
-                                <p class="<?= $error ? 'text-danger' : 'text-success' ?>"><?= $error ?></p>
+                                <p class="<?= $error ? 'text-success' : 'text-danger' ?>"><?= $error ?></p>
                             </div>
                         </div>
                     </div>

@@ -1,3 +1,15 @@
+<?php
+    include "libs/load.php";
+    
+    $conn = Database::getConnect();
+    
+    $buttons = Operations::getCate($conn);        // btn-name list
+    $contents = Operations::getContent($conn);    // category, main, card
+    $banner = Operations::getBanner($conn);       // banner image
+    $sliders = Operations::getSliders($conn);     // slider images
+    $brochure = Operations::getBrochure($conn);   // brochure file
+?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -156,95 +168,55 @@
         <div class="container-fluid p-4">
             <div class="row">
                 <div class="col-md-2 left-menu mb-3" id="v-pills-tab" role="tablist">
-                    <button class="btn btn-outline-danger download-btn active" data-bs-toggle="pill" data-bs-target="#handwriting">Handwriting</button>
-                    <button class="btn btn-outline-danger download-btn mt-3" data-bs-toggle="pill" data-bs-target="#science">Science</button>
-                    <button class="btn btn-outline-danger download-btn mt-3" data-bs-toggle="pill" data-bs-target="#english">Common English</button>
+                    <?php foreach ($buttons as $index => $btn): 
+                        $targetId = strtolower(str_replace(' ', '-', $btn['btn-name']));
+                    ?>
+                        <button class="btn btn-outline-danger download-btn <?= $index === 0 ? 'active' : '' ?> <?= $index === 0 ? '' : 'mt-3' ?>" 
+                            data-bs-toggle="pill" 
+                            data-bs-target="#<?= $targetId ?>">
+                            <?= htmlspecialchars($btn['btn-name']) ?>
+                        </button>
+                    <?php endforeach; ?>
                 </div>
 
                 <div class="col-md-7">
-                    <img src="https://img.pikbest.com/origin/10/09/25/28IpIkbEsTzia.jpg!w700wp" alt="Banner" style="width: -webkit-fill-available;" class="img-fluid rounded mb-3" />
-
+                    <?php if ($banner): ?>
+                        <img src="<?= $banner['img'] ?>" alt="Banner" style="width: -webkit-fill-available;" class="img-fluid rounded mb-3" />
+                    <?php endif; ?>
+                    
                     <div class="tab-content">
-                        <div class="tab-pane fade show active" id="handwriting">
-                            <h4>Why Handwriting?</h4>
-                            <p>Learn the importance of good handwriting and its impact on learning.</p>
+                        <?php foreach ($buttons as $index => $btn): 
+                            $targetId = strtolower(str_replace(' ', '-', $btn['btn-name']));
+                        ?>
+                            <div class="tab-pane fade <?= $index === 0 ? 'show active' : '' ?>" id="<?= $targetId ?>">
+                        <?php
+                            foreach ($contents as $content) {
+                                if ($content['category'] == $btn['btn-name']) {
+                        ?>
+                            <div><?= $content['main'] ?></div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="card p-3 mb-3">
-                                        <h5 class="card-title">Cursive Training</h5>
-                                        <p>Improve penmanship with structured exercises.</p>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="card p-3 mb-3">
-                                        <h5 class="card-title">Methodology</h5>
-                                        <p>Unique methods to help children write neatly.</p>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="card p-3 mb-3">
-                                        <h5 class="card-title">Cursive Training</h5>
-                                        <p>Improve penmanship with structured exercises.</p>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="card p-3 mb-3">
-                                        <h5 class="card-title">Methodology</h5>
-                                        <p>Unique methods to help children write neatly.</p>
+                                        <?= $content['card'] ?>
                                     </div>
                                 </div>
                             </div>
+                            <?php } } ?>
                         </div>
-
-                        <div class="tab-pane fade" id="science">
-                            <h4>Science Programs</h4>
-                            <p>Interactive and engaging science content for young learners.</p>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="card p-3 mb-3">
-                                        <h5 class="card-title">Physics Fun</h5>
-                                        <p>Easy experiments that teach real-world science.</p>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="card p-3 mb-3">
-                                        <h5 class="card-title">Biology Basics</h5>
-                                        <p>Learn human body, plants, and nature.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tab-pane fade" id="english">
-                            <h4>Common English Skills</h4>
-                            <p>Daily use English grammar and speaking skills for all levels.</p>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="card p-3 mb-3">
-                                        <h5 class="card-title">Vocabulary Boost</h5>
-                                        <p>Learn new words with meanings and usage.</p>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="card p-3 mb-3">
-                                        <h5 class="card-title">Daily Conversations</h5>
-                                        <p>Practice dialogues for real situations.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
 
                 <div class="col-md-3 right-panel">
                     <div class="image-slider">
-                        <div><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKbVAEp7jgKYb3VsuNOEdTk-dPNJFe9vFk_81VAD1tRm0Y2Hf9krbXbBvJAloUI-ZnC8g&usqp=CAU" class="slider-img" alt="Slide 1"></div>
-                        <div><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKbVAEp7jgKYb3VsuNOEdTk-dPNJFe9vFk_81VAD1tRm0Y2Hf9krbXbBvJAloUI-ZnC8g&usqp=CAU" class="slider-img" alt="Slide 2"></div>
-                        <div><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKbVAEp7jgKYb3VsuNOEdTk-dPNJFe9vFk_81VAD1tRm0Y2Hf9krbXbBvJAloUI-ZnC8g&usqp=CAU" class="slider-img" alt="Slide 3"></div>
+                        <?php foreach ($sliders as $index => $slide): ?>
+                            <div><img src="<?= $slide['img'] ?>" class="slider-img" alt="Slide <?= $index + 1 ?>"></div>
+                        <?php endforeach; ?>
                     </div>
 
-                    <a href="#" class="btn btn-secondary download-btn mt-3">Download Brochure</a>
+                    <?php if ($brochure): ?>
+                        <a href="<?= $brochure['file'] ?>" target="_blank" class="btn btn-secondary download-btn mt-3">Download Brochure</a>
+                    <?php endif; ?>
 
                     <img src="assets/img/qr.jpeg" alt="Banner" style="width: -webkit-fill-available;" class="img-fluid rounded mt-4" />
                 </div>
