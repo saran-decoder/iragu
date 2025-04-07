@@ -39,19 +39,17 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const toolbarOptions = [
+            [{ 'font': [] }, { 'size': ['small', false, 'large', 'huge'] }],
             ['bold', 'italic', 'underline', 'strike'],
-            ['blockquote', 'code-block'],
-            ['link', 'image', 'formula'],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'script': 'sub' }, { 'script': 'super' }],
             [{ 'header': 1 }, { 'header': 2 }],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
-            [{ 'script': 'sub' }, { 'script': 'super' }],
             [{ 'indent': '-1' }, { 'indent': '+1' }],
-            [{ 'direction': 'rtl' }],
-            [{ 'size': ['small', false, 'large', 'huge'] }],
-            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-            [{ 'color': [] }, { 'background': [] }],
-            [{ 'font': [] }],
             [{ 'align': [] }],
+            [{ 'direction': 'rtl' }],
+            ['blockquote', 'code-block'],
+            ['link', 'image', 'formula'],
             ['clean']
         ];
 
@@ -61,22 +59,24 @@
 
             let quill = new Quill(editorDiv, {
                 theme: "snow",
-                modules: { toolbar: toolbarOptions }
+                modules: {
+                    toolbar: toolbarOptions
+                }
             });
 
-            // Load the initial content from the hidden input
+            // Load the initial content from hidden input
             if (hiddenInput.value.trim() !== "") {
                 quill.root.innerHTML = hiddenInput.value;
             }
 
-            // Sync Quill content with hidden input on text change
+            // Sync content on change
             quill.on("text-change", function () {
                 hiddenInput.value = quill.root.innerHTML;
             });
         });
 
-        // Ensure all editors save data before form submission
-        document.querySelector("form").addEventListener("submit", function () {
+        // Save content on submit
+        document.querySelector("form")?.addEventListener("submit", function () {
             document.querySelectorAll(".quill-editor").forEach(editorDiv => {
                 let fieldName = editorDiv.getAttribute("data-name");
                 let hiddenInput = document.querySelector(`input[name="${fieldName}"]`);

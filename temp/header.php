@@ -20,7 +20,7 @@
                     <i class="ti ti-news"></i>
                 </li>
                 <li class="pc-item">
-                    <a href="./" class="pc-link">
+                    <a href="asc.php" class="pc-link">
                         <span class="pc-micon"><i class="ti ti-chart-donut-2"></i></span>
                         <span class="pc-mtext">Add Students Content</span>
                     </a>

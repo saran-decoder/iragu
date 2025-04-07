@@ -2,6 +2,40 @@
 
     include "libs/load.php";
 
+    $error = "";
+
+    // Check if form is submitted
+    if ($_SERVER['REQUEST_METHOD'] === 'POST')
+    {
+        if (isset($_POST['submit-btn']) && isset($_POST['btn-name'])) {
+            $name = $_POST['btn-name'] ?? "";
+            $error = User::setButton($name);
+        }
+
+        if (isset($_POST['submit-bc']) && isset($_POST['category']) && isset($_POST['main']) && isset($_POST['card'])) {
+            $cate = $_POST['category'] ?? "";
+            $main = $_POST['main'] ?? "";
+            $card = $_POST['card'] ?? "";
+            $error = User::setCenter($cate, $main, $card);
+        }
+
+        if (isset($_POST['submit-banner']) && isset($_FILES['img'])) {
+            $img = $_FILES['img'] ?? "";
+            $error = User::setBanner($img);
+        }
+
+        if (isset($_POST['submit-slider']) && isset($_FILES['img']))
+        {
+            $img = $_FILES['img'] ?? "";
+            $error = User::setSlider($img);
+        }
+
+        if (isset($_POST['submit-db']) && isset($_FILES['file'])) {
+            $file = $_FILES['file'] ?? "";
+            $error = User::setDownload($file);
+        }
+    }
+
 ?>
 
 <!DOCTYPE html>
@@ -13,7 +47,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <title>Iragu Foundation</title>
+        <title>Add Content | Iragu Foundation</title>
 
         <?php include "temp/head.php" ?>
 
@@ -39,6 +73,7 @@
                                     <li class="breadcrumb-item"><a href="https://iragufoundation.org/admin/dashboard">Dashboard</a></li>
                                     <li class="breadcrumb-item" aria-current="page">Add Content</li>
                                 </ul>
+                                <p class="<?= $error ? 'text-danger' : 'text-success' ?>"><?= $error ?></p>
                             </div>
                         </div>
                     </div>
@@ -57,7 +92,7 @@
                                 <form method="POST">
                                     <div class="form-group mb-3">
                                         <label class="form-label">Button Name</label>
-                                        <input type="text" class="form-control" placeholder="Button Name?" required/>
+                                        <input type="text" class="form-control" name="btn-name" placeholder="Button Name?" required/>
                                     </div>
                                     <div class="d-grid mt-3">
                                         <button type="submit" name="submit-btn" class="btn btn-danger" style="width: fit-content; place-self: end;">Submit</button>
@@ -75,6 +110,18 @@
                             </div>
                             <div class="card-body">
                                 <form method="POST">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Select Button Name</label>
+                                        <select class="form-control" name="category" required>
+                                            <option>Select Category</option>
+                                            <?php
+                                                $category = Operations::getCategory();
+                                                foreach ($category as $cate) {
+                                            ?>
+                                            <option value="<?= $cate['btn-name']; ?>"><?= $cate['btn-name']; ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
                                     <div class="form-group mb-3">
                                         <label class="form-label">Main Content</label>
                                         <div class="quill-editor" data-name="main"></div>
@@ -123,7 +170,7 @@
                                 <form method="POST" enctype="multipart/form-data">
                                     <div class="form-group mb-3">
                                         <label class="form-label">Slider Images</label>
-                                        <input type="file" name="img[]" accept="image/*" class="form-control" required/>
+                                        <input type="file" name="img[]" class="form-control" accept="image/*" multiple required/>
                                     </div>
                                     <div class="d-grid mt-3">
                                         <button type="submit" name="submit-slider" class="btn btn-danger" style="width: fit-content; place-self: end;">Submit</button>
@@ -143,7 +190,7 @@
                                 <form method="POST" enctype="multipart/form-data">
                                     <div class="form-group mb-3">
                                         <label class="form-label">Brochure File</label>
-                                        <input type="file" name="file" class="form-control" required/>
+                                        <input type="file" name="file" class="form-control" accept=".pdf" required/>
                                     </div>
                                     <div class="d-grid mt-3">
                                         <button type="submit" name="submit-db" class="btn btn-danger" style="width: fit-content; place-self: end;">Submit</button>
@@ -157,7 +204,7 @@
                 <!-- [ Main Content ] end -->
             </div>
         </div>
-        <!-- [ Main Content ] end -->
+        <!-- [ Main Content ] end_ -->
         
         <?php include "temp/footer.php" ?>
 
