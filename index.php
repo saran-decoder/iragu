@@ -4,10 +4,16 @@
     $conn = Database::getConnect();
     
     $buttons = Operations::getCate($conn);        // btn-name list
+    $subbtn = Operations::getSubCate($conn);        // sub btn-name list
     $contents = Operations::getContent($conn);    // category, main, card
     $banner = Operations::getBanner($conn);       // banner image
     $sliders = Operations::getSliders($conn);     // slider images
     $brochure = Operations::getBrochure($conn);   // brochure file
+
+    if (empty($buttons)) {
+        header("Location: https://iragufoundation.org/");
+        exit;
+    }
 ?>
 
 <!DOCTYPE html>
@@ -137,6 +143,11 @@
                 max-width: 220px;
                 height: auto;
             }
+
+            .btn-check:checked+.btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active {
+                background-color: red !important;
+                border-color: red !important;
+            }
         </style>
     </head>
     <body>
@@ -167,62 +178,116 @@
 
         <div class="container-fluid p-4">
             <div class="row">
+
+                <!-- Left Menu -->
                 <div class="col-md-2 left-menu mb-3" id="v-pills-tab" role="tablist">
-                    <?php foreach ($buttons as $index => $btn): 
-                        $targetId = strtolower(str_replace(' ', '-', $btn['btn-name']));
+                    <?php
+                    // Group sub-buttons by category
+                    $subCategories = [];
+                    foreach ($subbtn as $sub) {
+                        $subCategories[$sub['category']][] = $sub;
+                    }
+
+                    foreach ($buttons as $index => $btn):
+                        $name = $btn['btn-name'];
+                        $targetId = strtolower(str_replace(' ', '-', $name));
+
+                        // If no sub-categories
+                        if (!isset($subCategories[$name])):
                     ?>
-                        <button class="btn btn-outline-danger download-btn <?= $index === 0 ? 'active' : '' ?> <?= $index === 0 ? '' : 'mt-3' ?>" 
-                            data-bs-toggle="pill" 
-                            data-bs-target="#<?= $targetId ?>">
-                            <?= htmlspecialchars($btn['btn-name']) ?>
+                        <button class="btn btn-outline-danger download-btn w-100 text-start <?= $index === 0 ? 'active' : 'mt-3' ?>"
+                                data-bs-toggle="pill"
+                                data-bs-target="#<?= $targetId ?>">
+                            <?= htmlspecialchars($name) ?>
                         </button>
-                    <?php endforeach; ?>
+                    <?php
+                        // If has sub-categories
+                        else:
+                    ?>
+                        <div class="dropdown mt-3 w-100">
+                            <button class="btn btn-danger dropdown-toggle w-100 text-start"
+                                    data-bs-toggle="dropdown">
+                                <?= htmlspecialchars($name) ?>
+                            </button>
+                            <ul class="dropdown-menu w-100">
+                                <?php foreach ($subCategories[$name] as $sub):
+                                    $subId = strtolower(str_replace(' ', '-', $sub['name']));
+                                ?>
+                                    <li>
+                                        <a class="dropdown-item" data-bs-toggle="pill" data-bs-target="#<?= $subId ?>">
+                                            <?= htmlspecialchars($sub['name']) ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    <?php endif; endforeach; ?>
                 </div>
 
+                <!-- Center Content -->
                 <div class="col-md-7">
                     <?php if ($banner): ?>
-                        <img src="<?= $banner['img'] ?>" alt="Banner" style="width: -webkit-fill-available;" class="img-fluid rounded mb-3" />
+                        <img src="<?= $banner['img'] ?>" alt="Banner" class="img-fluid rounded mb-3 w-100" />
                     <?php endif; ?>
-                    
+
                     <div class="tab-content">
-                        <?php foreach ($buttons as $index => $btn): 
+                        <?php
+                        $isFirst = true;
+
+                        // Main category tab panes
+                        foreach ($buttons as $btn):
                             $targetId = strtolower(str_replace(' ', '-', $btn['btn-name']));
                         ?>
-                            <div class="tab-pane fade <?= $index === 0 ? 'show active' : '' ?>" id="<?= $targetId ?>">
-                        <?php
-                            foreach ($contents as $content) {
-                                if ($content['category'] == $btn['btn-name']) {
-                        ?>
-                            <div><?= $content['main'] ?></div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="card p-3 mb-3">
-                                        <?= $content['card'] ?>
+                            <div class="tab-pane fade <?= $isFirst ? 'show active' : '' ?>" id="<?= $targetId ?>">
+                                <?php foreach ($contents as $c): if ($c['category'] === $btn['btn-name']): ?>
+                                    <div><?= $c['main'] ?></div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="card p-3 mb-3"><?= $c['card'] ?></div>
+                                        </div>
                                     </div>
-                                </div>
+                                <?php endif; endforeach; ?>
                             </div>
-                            <?php } } ?>
-                        </div>
+                        <?php $isFirst = false; endforeach; ?>
+
+                        <!-- Sub-category tab panes -->
+                        <?php foreach ($subbtn as $sub):
+                            $subId = strtolower(str_replace(' ', '-', $sub['name']));
+                        ?>
+                            <div class="tab-pane fade" id="<?= $subId ?>">
+                                <?php foreach ($contents as $c): if ($c['category'] === $sub['name']): ?>
+                                    <div><?= $c['main'] ?></div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="card p-3 mb-3"><?= $c['card'] ?></div>
+                                        </div>
+                                    </div>
+                                <?php endif; endforeach; ?>
+                            </div>
                         <?php endforeach; ?>
                     </div>
                 </div>
 
+                <!-- Right Panel -->
                 <div class="col-md-3 right-panel">
-                    <div class="image-slider">
-                        <?php foreach ($sliders as $index => $slide): ?>
-                            <div><img src="<?= $slide['img'] ?>" class="slider-img" alt="Slide <?= $index + 1 ?>"></div>
-                        <?php endforeach; ?>
-                    </div>
-
-                    <?php if ($brochure): ?>
-                        <a href="<?= $brochure['file'] ?>" target="_blank" class="btn btn-secondary download-btn mt-3">Download Brochure</a>
+                    <?php if (!empty($sliders)): ?>
+                        <div class="image-slider mb-3">
+                            <?php foreach ($sliders as $index => $slide): ?>
+                                <div><img src="<?= $slide['img'] ?>" class="slider-img img-fluid" alt="Slide <?= $index + 1 ?>"></div>
+                            <?php endforeach; ?>
+                        </div>
                     <?php endif; ?>
 
-                    <img src="assets/img/qr.jpeg" alt="Banner" style="width: -webkit-fill-available;" class="img-fluid rounded mt-4" />
+                    <?php if ($brochure): ?>
+                        <a href="<?= $brochure['file'] ?>" target="_blank" class="btn btn-secondary download-btn w-100 mb-3">Download Brochure</a>
+                    <?php endif; ?>
+
+                    <img src="assets/img/qr.jpeg" alt="QR Code" class="img-fluid rounded w-100 <?= $brochure ? '' : 'mt-3'; ?>" />
                 </div>
 
             </div>
         </div>
+
 
         <!--=============== SWIPER JS ===============-->
         <script src="https://iragufoundation.org/assets/js/swiper-bundle.min.js"></script>

@@ -46,7 +46,8 @@
                             <tbody>
                                 <?php
                                     $buttons = Operations::getCate($conn);
-                                    foreach ($buttons as $index => $btn) {
+                                    if ($buttons) {
+                                        foreach ($buttons as $index => $btn) {
                                 ?>
                                 <tr>
                                     <td><?= $index + 1 ?></td>
@@ -56,7 +57,36 @@
                                         <a href="delete-button.php?id=<?= $btn['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this button?');">Delete</a>
                                     </td>
                                 </tr>
-                                <?php } ?>
+                                <?php } } else { echo "<tr><td>No button text uploaded.</td></tr>"; } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Sub Left Side Buttons -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Sub Left Side Buttons</h5>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table table-bordered">
+                            <thead><tr><th>#</th><th>Name</th><th>Category</th><th>Actions</th></tr></thead>
+                            <tbody>
+                                <?php
+                                    $buttons = Operations::getSubCate($conn);
+                                    if ($buttons) {
+                                        foreach ($buttons as $index => $btn) {
+                                ?>
+                                <tr>
+                                    <td><?= $index + 1 ?></td>
+                                    <td><?= htmlspecialchars($btn['name']) ?></td>
+                                    <td><?= htmlspecialchars($btn['category']) ?></td>
+                                    <td>
+                                        <a href="edit-subbutton.php?id=<?= $btn['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
+                                        <a href="delete-subbutton.php?id=<?= $btn['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this button?');">Delete</a>
+                                    </td>
+                                </tr>
+                                <?php } } else { echo "<tr><td>No sub button text uploaded.</td></td>"; } ?>
                             </tbody>
                         </table>
                     </div>
@@ -75,7 +105,8 @@
                             <tbody>
                                 <?php
                                     $contents = Operations::getContent($conn);
-                                    foreach ($contents as $index => $con) {
+                                    if ($contents) {
+                                        foreach ($contents as $index => $con) {
                                 ?>
                                 <tr>
                                     <td><?= $index + 1 ?></td>
@@ -87,7 +118,7 @@
                                         <a href="delete-content.php?id=<?= $con['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this content?');">Delete</a>
                                     </td>
                                 </tr>
-                                <?php } ?>
+                                <?php } } else { echo "<tr><td>No button content uploaded.</td></tr>"; } ?>
                             </tbody>
                         </table>
                     </div>
@@ -115,7 +146,8 @@
                     <div class="card-body row">
                         <?php
                             $sliders = Operations::getSliders($conn);
-                            foreach ($sliders as $slide) {
+                            if ($sliders) {
+                                foreach ($sliders as $slide) {
                         ?>
                         <div class="col-sm-6 col-md-4 mb-3">
                             <img src="<?= $slide['img'] ?>" class="img-fluid rounded" alt="Slider Image" />
@@ -123,7 +155,7 @@
                                 <a href="delete-slider.php?id=<?= $slide['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this image?');">Delete</a>
                             </div>
                         </div>
-                        <?php } ?>
+                        <?php } } else { echo "<p>No slider uploaded.</p>"; } ?>
                     </div>
                 </div>
 

@@ -10,9 +10,24 @@ class Operations
         return iterator_to_array($result);
     }
 
+    public static function getSubCategory()
+    {
+        $conn = Database::getConnect();
+        $sql = "SELECT * FROM `sub-cate` ORDER BY `created_at` ASC";
+        $result = $conn->query($sql);
+        return iterator_to_array($result);
+    }
+
     public static function getCate($conn)
     {
         $sql = "SELECT * FROM `cate` ORDER BY `created_at` ASC";
+        $result = $conn->query($sql);
+        return iterator_to_array($result);
+    }
+
+    public static function getSubCate($conn)
+    {
+        $sql = "SELECT * FROM `sub-cate` ORDER BY `created_at` ASC";
         $result = $conn->query($sql);
         return iterator_to_array($result);
     }
@@ -49,6 +64,14 @@ class Operations
     {
         $getID = $_GET['id'];
         $sql = "SELECT * FROM `cate` WHERE `id` = '$getID'";
+        $result = $conn->query($sql);
+        return $result ? $result->fetch_assoc() : null;
+    }
+
+    public static function getESubCate($conn)
+    {
+        $getID = $_GET['id'];
+        $sql = "SELECT * FROM `sub-cate` WHERE `id` = '$getID'";
         $result = $conn->query($sql);
         return $result ? $result->fetch_assoc() : null;
     }

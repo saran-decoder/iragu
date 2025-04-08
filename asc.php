@@ -12,6 +12,12 @@
             $error = User::setButton($name);
         }
 
+        if (isset($_POST['submit-sub-btn']) && isset($_POST['category']) && isset($_POST['btn-name'])) {
+            $cate = $_POST['category'] ?? "";
+            $name = $_POST['btn-name'] ?? "";
+            $error = User::setSubButton($name, $cate);
+        }
+
         if (isset($_POST['submit-bc']) && isset($_POST['category']) && isset($_POST['main']) && isset($_POST['card'])) {
             $cate = $_POST['category'] ?? "";
             $main = $_POST['main'] ?? "";
@@ -106,7 +112,7 @@
                     <div class="col-sm-12">
                         <div class="card">
                             <div class="card-header">
-                                <h5>Add Button Content</h5>
+                                <h5>Add Sub Left Side Button</h5>
                             </div>
                             <div class="card-body">
                                 <form method="POST">
@@ -115,10 +121,49 @@
                                         <select class="form-control" name="category" required>
                                             <option>Select Category</option>
                                             <?php
-                                                $category = Operations::getCategory();
+                                                $conn = Database::getConnect();
+                                                $category = Operations::getCate($conn);
                                                 foreach ($category as $cate) {
                                             ?>
                                             <option value="<?= $cate['btn-name']; ?>"><?= $cate['btn-name']; ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Sub Button Name</label>
+                                        <input type="text" class="form-control" name="btn-name" placeholder="Button Name?" required/>
+                                    </div>
+                                    <div class="d-grid mt-3">
+                                        <button type="submit" name="submit-sub-btn" class="btn btn-danger" style="width: fit-content; place-self: end;">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- [ sample-page ] end -->
+                    <!-- [ sample-page ] start -->
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Add Button Content</h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Select Button Name</label>
+                                        <select class="form-control" name="category" required>
+                                            <option disabled selected>Select Category</option>
+                                            <?php
+                                                foreach ($category as $cate) {
+                                            ?>
+                                            <option value="<?= $cate['btn-name']; ?>"><?= $cate['btn-name']; ?></option>
+                                            <?php } ?>
+                                            <option disabled>Sub Category</option>
+                                            <?php
+                                                $category = Operations::getSubCate($conn);
+                                                foreach ($category as $cate) {
+                                            ?>
+                                            <option value="<?= $cate['name']; ?>"><?= $cate['name']; ?></option>
                                             <?php } ?>
                                         </select>
                                     </div>

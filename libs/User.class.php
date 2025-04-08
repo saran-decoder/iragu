@@ -11,7 +11,8 @@ class User
         $stmt->bind_param("s", $name);
 
         if ($stmt->execute()) {
-            return "Button text inserted";
+            header("Location: vsc.php");
+            exit;
         } else {
             return "Error occurred while saving data: " . $stmt->error;
         }
@@ -22,6 +23,36 @@ class User
         $sql = "UPDATE `cate` SET `btn-name` = ?, `created_at` = NOW() WHERE `id` = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("si", $name, $getID);
+
+        if ($stmt->execute()) {
+            header("Location: vsc.php");
+            exit;
+        } else {
+            return "Error occurred while saving data: " . $stmt->error;
+        }
+    }
+
+    public static function setSubButton($name, $cate)
+    {
+        $conn = Database::getConnect();
+
+        $sql = "INSERT INTO `sub-cate` (`name`, `category`, `created_at`) VALUES (?, ?, NOW())";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ss", $name, $cate);
+
+        if ($stmt->execute()) {
+            header("Location: vsc.php");
+            exit;
+        } else {
+            return "Error occurred while saving data: " . $stmt->error;
+        }
+    }
+
+    public static function updateSubButton($getID, $name, $cate, $conn)
+    {
+        $sql = "UPDATE `sub-cate` SET `name` = ?, `category` = ?, `created_at` = NOW() WHERE `id` = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssi", $name, $cate, $getID);
 
         if ($stmt->execute()) {
             header("Location: vsc.php");
